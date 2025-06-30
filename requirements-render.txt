@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+transformers==4.35.2
+tokenizers==0.14.1
+torch==2.0.1+cpu -f https://download.pytorch.org/whl/cpu
+scikit-learn
+pandas
+numpy
+--only-binary=:all:
