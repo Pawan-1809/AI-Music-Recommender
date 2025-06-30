@@ -67,9 +67,3 @@ def predict_mood(req: MoodRequest):
     except Exception as e:
         return {"error": str(e)}
 
-import uvicorn
-
-if _name_ == "_main_":
-    import os
-    port = int(os.environ.get("PORT", 8000))  # Port from Render's environment
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
