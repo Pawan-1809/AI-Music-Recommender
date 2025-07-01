@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export PORT=3000
-
+export PORT=${PORT:-10000}
+echo "Starting Uvicorn..."
 export TRANSFORMERS_CACHE="./cache"
 export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
 
