@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import os
 
 st.set_page_config(page_title="AI Mood Music Recommender 🎵", page_icon="🎧")
 st.markdown(
@@ -12,12 +13,15 @@ st.write("Tell me how you're feeling in words, and I'll give you songs that matc
 user_input = st.text_area("💬 What's on your mind?", height=150)
 
 mood_emojis = {
-    "Happy": "😊",
-    "Sad": "😢",
-    "Angry": "😡",
-    "Relaxed": "😌",
-    "Neutral": "🙂"
+    "happy": "😊",
+    "sad": "😢",
+    "angry": "😡",
+    "relaxed": "😌",
+    "neutral": "🙂"
 }
+
+# Use Render environment variable or fallback to localhost for dev
+BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:10000")
 
 if st.button("🔍 Predict Mood"):
     if not user_input.strip():
@@ -26,14 +30,14 @@ if st.button("🔍 Predict Mood"):
         try:
             # Send request to FastAPI
             response = requests.post(
-                "http://localhost:8000/predict",
+                f"{BACKEND_URL}/predict",
                 json={"text": user_input}
             )
 
             if response.status_code == 200:
                 data = response.json()
-                emoji = mood_emojis.get(data['predicted_mood'], "")
-                st.success(f"🎭 Predicted Mood: *{data['predicted_mood']}* {emoji}")
+                emoji = mood_emojis.get(data['predicted_mood'].lower(), "")
+                st.success(f"🎭 Predicted Mood: *{data['predicted_mood'].capitalize()}* {emoji}")
                 st.markdown("🎧 *Recommended Songs:*")
                 for i, song in enumerate(data['recommended_songs'], 1):
                     # Generate a YouTube search URL
@@ -43,4 +47,4 @@ if st.button("🔍 Predict Mood"):
                 st.error("Something went wrong with the prediction.")
 
         except requests.exceptions.ConnectionError:
-            st.error("❌ Could not connect to the FastAPI backend. Is it running on port 8000?")
+            st.error("❌ Could not connect to the FastAPI backend. Is it running?")

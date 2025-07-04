@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import BertTokenizer, BertForSequenceClassification
@@ -8,14 +9,21 @@ import uvicorn
 # FastAPI app
 app = FastAPI()
 
+# Use absolute paths for model files (Render runs from project root)
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "model")
+TOKENIZER_PATH = MODEL_DIR
+MODEL_PATH = MODEL_DIR
+LABEL_MAP_PATH = os.path.join(MODEL_DIR, "label_mappings.pkl")
+MOOD_SONG_MAP_PATH = os.path.join(MODEL_DIR, "mood_song_map.pkl")
+
 # Load tokenizer and model
-tokenizer = BertTokenizer.from_pretrained("backend/model/model")
-model = BertForSequenceClassification.from_pretrained("backend/model/model")
+tokenizer = BertTokenizer.from_pretrained(TOKENIZER_PATH)
+model = BertForSequenceClassification.from_pretrained(MODEL_PATH)
 model.eval()
 
 # Load label mappings and mood-song map
-id2label, label2id = joblib.load("backend/model/label_mappings.pkl")  # FIXED: Correct unpacking
-mood_to_songs = joblib.load("backend/model/mood_song_map.pkl")
+label2id, id2label = joblib.load(LABEL_MAP_PATH)
+mood_to_songs = joblib.load(MOOD_SONG_MAP_PATH)
 
 # Mood remap for matching to available songs
 mood_remap = {
@@ -66,3 +74,8 @@ def predict_mood(req: MoodRequest):
     
     except Exception as e:
         return {"error": str(e)}
+
+# For local dev: uvicorn backend.main:app --host 0.0.0.0 --port 8000
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=port, reload=False)

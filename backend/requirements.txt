@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+transformers==4.35.2
+torch
+joblib
+pydantic
