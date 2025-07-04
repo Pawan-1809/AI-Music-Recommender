@@ -5,16 +5,16 @@ from transformers import BertTokenizer, BertForSequenceClassification
 import torch
 import joblib
 import uvicorn
-
+from pathlib import Path
 # FastAPI app
 app = FastAPI()
 
 # Use absolute paths for model files (Render runs from project root)
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "model")
+MODEL_DIR = Path(__file__).parent / "model"
 TOKENIZER_PATH = MODEL_DIR
 MODEL_PATH = MODEL_DIR
-LABEL_MAP_PATH = os.path.join(MODEL_DIR, "label_mappings.pkl")
-MOOD_SONG_MAP_PATH = os.path.join(MODEL_DIR, "mood_song_map.pkl")
+LABEL_MAP_PATH = MODEL_DIR / "label_mappings.pkl"
+MOOD_SONG_MAP_PATH = MODEL_DIR / "mood_song_map.pkl"
 
 # Load tokenizer and model
 tokenizer = BertTokenizer.from_pretrained(TOKENIZER_PATH)
